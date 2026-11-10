@@ -147,6 +147,14 @@ html.en .stat b { font-weight: 400; }
 @keyframes breathe { 50% { transform: scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .orb * { animation: none !important; } }
 
+/* rotate hint (phones held upright) */
+.rotate { position: fixed; inset-inline: 16px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 9; background: var(--brown); color: var(--white); border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 16px 40px -16px rgba(40,26,24,.6); }
+.rotate svg { flex: 0 0 auto; animation: tilt 2.4s ease-in-out infinite; }
+.rotate p { font-size: 15px; line-height: 1.4; margin: 0; flex: 1; }
+.rotate button { flex: 0 0 auto; border: 0; background: rgba(255,255,255,.16); color: var(--white); border-radius: 99px; padding: 6px 12px; font: 700 13px var(--body); cursor: pointer; }
+@keyframes tilt { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+@media (prefers-reduced-motion: reduce) { .rotate svg { animation: none; } }
+
 /* cover photo strip */
 .slide.cover { gap: clamp(20px, 3.5vh, 40px); }
 .cover .orb { width: min(380px, 44vh, 72vw); }
@@ -601,6 +609,12 @@ html:not(.en) .navb svg { transform: scaleX(-1); }
 </div>
 </main>
 
+<div class="rotate" id="rotate" hidden>
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true"><rect x="9" y="3" width="12" height="24" rx="2.5" stroke="#ef3f6b" stroke-width="2"/><circle cx="15" cy="23" r="1.2" fill="#ef3f6b"/></svg>
+  <p><span class="he-only">לצפייה כמו במצגת, סובבו את הטלפון לרוחב</span><span class="en-only">For the full presentation view, turn your phone sideways</span></p>
+  <button type="button" id="rotateClose"><span class="he-only">הבנתי</span><span class="en-only">Got it</span></button>
+</div>
+
 <div class="bottom">
   <button class="navb" id="prev" type="button" aria-label="Previous"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4 6.5 10l6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <div class="count num" id="count">1 / 11</div>
@@ -673,6 +687,28 @@ document.addEventListener("touchend", e => {
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { const forward = en ? dx < 0 : dx > 0; show(i + (forward ? 1 : -1)); }
   x0 = null;
 });
+/* phones: landscape renders the desktop layout scaled down, like a real slide; portrait gets a hint */
+const STAGE_W = 1280;
+const isPhone = Math.min(screen.width, screen.height) < 600 && matchMedia("(pointer: coarse)").matches;
+let hintClosed = false;
+function fitPhone() {
+  if (!isPhone) return;
+  const land = Math.abs(window.orientation || 0) === 90 || (screen.orientation && screen.orientation.type.startsWith("landscape"));
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (meta) {
+    const long = Math.max(screen.width, screen.height);
+    meta.setAttribute("content", land
+      ? `width=${STAGE_W}, initial-scale=${(long / STAGE_W).toFixed(4)}, maximum-scale=${(long / STAGE_W).toFixed(4)}, viewport-fit=cover`
+      : "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover");
+  }
+  document.getElementById("rotate").hidden = land || hintClosed;
+  setTimeout(() => show(i), 60);
+}
+document.getElementById("rotateClose").onclick = () => { hintClosed = true; document.getElementById("rotate").hidden = true; };
+window.addEventListener("orientationchange", () => setTimeout(fitPhone, 150));
+if (screen.orientation) screen.orientation.addEventListener("change", () => setTimeout(fitPhone, 150));
+fitPhone();
+
 let saved = "he"; try { saved = localStorage.getItem("tr-lang") || "he"; } catch (e) {}
 setLang(saved === "en");
 </script>
