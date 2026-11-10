@@ -147,6 +147,44 @@ html.en .stat b { font-weight: 400; }
 @keyframes breathe { 50% { transform: scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .orb * { animation: none !important; } }
 
+/* safe centering: tall slides scroll from the top instead of clipping */
+.slide { justify-content: flex-start; }
+.slide > :first-child { margin-top: auto; }
+.slide > :last-child { margin-bottom: auto; }
+.slide.full { justify-content: flex-end; }
+
+/* short landscape screens (phones on their side): compact everything so a slide fits */
+@media (min-width: 861px) and (max-height: 700px) {
+  .slide { padding-block: 52px 70px; gap: 14px; }
+  .inner { gap: 12px; }
+  h2 { font-size: clamp(28px, 3.2vw, 44px); }
+  .cover h1 { font-size: clamp(30px, 3.6vw, 50px); }
+  .cover-text { gap: 14px; }
+  .logo-big { width: min(420px, 40vw); }
+  .cover .orb { width: min(300px, 40vh); }
+  .strip img { height: clamp(60px, 13vh, 100px); }
+  p, .points li, .step ul { font-size: 15px; }
+  .lead { font-size: 17px; }
+  .points { gap: 8px; }
+  .photo { max-height: 62vh; }
+  .reason { padding: 18px 22px; gap: 8px; }
+  .reason > b { width: 40px; height: 40px; font-size: 22px; }
+  .reason h3, .era h3, .option h3 { font-size: 24px; }
+  .era { padding: 16px 20px; gap: 10px; }
+  .dots i { width: 12px; height: 12px; } .dots i.b { width: 26px; height: 26px; margin-top: -7px; } .dots i.m { width: 17px; height: 17px; margin-top: -2px; } .dots i.s { width: 8px; height: 8px; }
+  .aud div { padding: 6px 16px; font-size: 15px; } .aud { gap: 6px; }
+  .anchor { padding: 12px 18px; } .anchor b { font-size: 22px; }
+  .pie { width: min(170px, 30vh); } .pie b { font-size: 24px; }
+  .option { gap: 8px; } .option .sub, .key { font-size: 14px; } .key .kx { font-size: 12px; }
+  .asm-grid { gap: 8px; } .asm { padding: 10px 14px; gap: 4px; } .asm h3 { font-size: 19px; }
+  .asm .what { font-size: 13px; } .asm .calc { font-size: 12px; } .asm .tot { font-size: 14px; }
+  .sum-line { font-size: 14px; padding: 8px 14px; }
+  .chan { padding: 16px 18px; gap: 6px; } .chan h3 { font-size: 21px; } .chan p { font-size: 14px; } .chan .ico { width: 34px; height: 34px; font-size: 18px; }
+  .step { padding-top: 20px; gap: 8px; } .step h3 { font-size: 26px; } .money { height: 70px; } .money div { width: 34px; }
+  .stat b { font-size: 38px; } .part.fest b { font-size: 40px; } .part { padding: 10px 16px; }
+  .full .over { padding-block: 0 80px; }
+}
+
 /* rotate hint (phones held upright) */
 .rotate { position: fixed; inset-inline: 16px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 9; background: var(--brown); color: var(--white); border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 16px 40px -16px rgba(40,26,24,.6); }
 .rotate svg { flex: 0 0 auto; animation: tilt 2.4s ease-in-out infinite; }
